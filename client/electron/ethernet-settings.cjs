@@ -6,8 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { app, safeStorage } = require('electron');
 
-const isPackaged = app ? app.isPackaged : false;
-const ROOT = process.env.PORTABLE_EXECUTABLE_DIR || (process.env.APPIMAGE ? path.dirname(process.env.APPIMAGE) : (isPackaged ? path.dirname(process.execPath) : path.join(__dirname, '..', '..')));
+const { ROOT } = require('./ethernet-paths.cjs');
 
 const ENC_PREFIX = 'enc:';
 

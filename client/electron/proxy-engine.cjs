@@ -8,8 +8,7 @@ const net = require('net');
 const hermesSettings = require('./hermes-settings.cjs');
 
 const app = electron.app || null;
-const isPackaged = app ? app.isPackaged : false;
-const ROOT = isPackaged ? path.dirname(process.execPath) : path.join(__dirname, '..', '..');
+const { ROOT } = require('./ethernet-paths.cjs');
 const LOG_FILE = path.join(ROOT, 'hermes-proxy.log');
 
 function plog(...args) {

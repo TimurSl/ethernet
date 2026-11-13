@@ -42,9 +42,8 @@ app.commandLine.appendSwitch('enable-zero-copy');
 app.commandLine.appendSwitch('enable-accelerated-video-decode');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 
-const isPackaged = app.isPackaged;
 const DIST = path.join(__dirname, '..', 'dist');
-const ROOT = process.env.PORTABLE_EXECUTABLE_DIR || (process.env.APPIMAGE ? path.dirname(process.env.APPIMAGE) : (isPackaged ? path.dirname(process.execPath) : path.join(__dirname, '..', '..')));
+const { ROOT } = require('./ethernet-paths.cjs');
 const THEMES_DIR = path.join(ROOT, 'themes');
 const PLUGINS_DIR = path.join(ROOT, 'plugins');
 const WALLPAPERS_DIR = path.join(ROOT, 'wallpapers');
