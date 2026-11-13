@@ -10,6 +10,7 @@ import { buildCollectionByKey } from '../../../util/iteratees';
 import * as langProvider from '../../../util/oldLangProvider';
 import { pause, throttle } from '../../../util/schedulers';
 import { callApi } from '../../../api/gramjs';
+import { checkIsUnigifEnabled, isUnigifVideo } from '../../../api/unigif';
 import {
   addActionHandler,
   getGlobal, setGlobal,
@@ -427,7 +428,13 @@ addActionHandler('loadGenericEmojiEffects', async (global): Promise<void> => {
   setGlobal(global);
 });
 
-addActionHandler('loadSavedGifs', async (global): Promise<void> => {
+addActionHandler('loadSavedGifs', async (global, actions): Promise<void> => {
+  if (await checkIsUnigifEnabled()) {
+    actions.loadUnigifGifs();
+    return;
+  }
+
+  global = getGlobal();
   const { hash } = global.gifs.saved;
 
   const savedGifs = await callApi('fetchSavedGifs', { hash });
@@ -452,6 +459,15 @@ addActionHandler('saveGif', async (global, actions, payload): Promise<void> => {
     gif, shouldUnsave,
     tabId = getCurrentTabId(),
   } = payload;
+
+  // A UNIGIF key has no delete scope, so unsaving only applies to Telegram's own list
+  if (isUnigifVideo(gif)) return;
+  if (!shouldUnsave && await checkIsUnigifEnabled()) {
+    actions.saveGifToUnigif({ gif, tabId });
+    return;
+  }
+
+  global = getGlobal();
   const length = global.gifs.saved.gifs?.length;
 
   const limit = selectCurrentLimit(global, 'savedGifs');

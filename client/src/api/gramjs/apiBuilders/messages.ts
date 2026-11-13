@@ -806,6 +806,7 @@ export function buildUploadingMedia(
             size,
             isSpoiler: shouldSendAsSpoiler,
             isRound: isRoundVideo,
+            isGif: attachment.isGif,
             waveform: isRoundVideo ? generateWaveform(duration || 0) : undefined,
           },
           ttlSeconds,

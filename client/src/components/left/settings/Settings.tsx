@@ -28,6 +28,7 @@ import SettingsEthernet from './SettingsEthernet';
 import SettingsEthernetFunctions from './SettingsEthernetFunctions';
 import SettingsEthernetNetwork from './SettingsEthernetNetwork';
 import SettingsEthernetPlugins from './SettingsEthernetPlugins';
+import SettingsEthernetUnigif from './SettingsEthernetUnigif';
 import SettingsEthernetThemes from './SettingsEthernetThemes';
 import SettingsEthernetThemeEditor from './SettingsEthernetThemeEditor';
 import SettingsExperimental from './SettingsExperimental';
@@ -227,6 +228,7 @@ const Settings: FC<OwnProps> = ({
       || currentScreen === SettingsScreens.EthernetPlugins
       || currentScreen === SettingsScreens.EthernetFunctions
       || currentScreen === SettingsScreens.EthernetNetwork
+      || currentScreen === SettingsScreens.EthernetUnigif
     ) {
       openSettingsScreen({ screen: SettingsScreens.Ethernet });
       return;
@@ -355,6 +357,13 @@ const Settings: FC<OwnProps> = ({
       case SettingsScreens.EthernetNetwork:
         return (
           <SettingsEthernetNetwork
+            isActive={isScreenActive}
+            onReset={handleReset}
+          />
+        );
+      case SettingsScreens.EthernetUnigif:
+        return (
+          <SettingsEthernetUnigif
             isActive={isScreenActive}
             onReset={handleReset}
           />

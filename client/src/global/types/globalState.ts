@@ -436,6 +436,13 @@ export type GlobalState = {
       hash?: string;
       gifs?: ApiVideo[];
     };
+    /** UNIGIF library; replaces `saved` in the GIF panel while `isEnabled` */
+    unigif: {
+      isEnabled?: boolean;
+      gifs?: ApiVideo[];
+      nextCursor?: string;
+      isLoadingMore?: boolean;
+    };
   };
 
   topPeerCategories: Partial<Record<ApiTopPeerCategory, {

@@ -285,6 +285,7 @@ export const INITIAL_GLOBAL_STATE: GlobalState = {
 
   gifs: {
     saved: {},
+    unigif: {},
   },
 
   topPeerCategories: {},

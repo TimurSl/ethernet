@@ -75,6 +75,8 @@ import { oldTranslate } from '../../../util/oldLangProvider';
 import { debounce, onTickEnd, rafPromise } from '../../../util/schedulers';
 import { getServerTime } from '../../../util/serverTime';
 import { callApi, cancelApiProgress } from '../../../api/gramjs';
+import { isUnigifVideo, prepareUnigifGifForSending } from '../../../api/unigif';
+import { getEthernetString } from '../../../util/ethernetLang';
 import {
   getIsSavedDialog,
   getUserFullName,
@@ -527,6 +529,20 @@ addActionHandler('sendMessage', async (global, actions, payload): Promise<void> 
     }, tabId);
     setGlobal(global);
     return;
+  }
+
+  if (hasUnigifMedia(payload)) {
+    try {
+      payload = await resolveUnigifMedia(payload);
+    } catch (err) {
+      actions.showNotification({
+        title: getEthernetString(undefined, 'EthernetUnigifSendFailed'),
+        message: err instanceof Error ? err.message : String(err),
+        tabId,
+      });
+      return;
+    }
+    global = getGlobal();
   }
 
   const chat = selectChat(global, chatId!)!;
@@ -3910,6 +3926,39 @@ function countSortedIds(ids: number[], from: number, to: number) {
   }
 
   return count;
+}
+
+function hasUnigifMedia(payload: Partial<SendMessageParams>) {
+  return Boolean((payload.gif && isUnigifVideo(payload.gif))
+    || (payload.attachment?.gif && isUnigifVideo(payload.attachment.gif))
+    || payload.attachments?.some((attachment) => attachment.gif && isUnigifVideo(attachment.gif)));
+}
+
+// UNIGIF GIFs have no Telegram document; they become a Telegram copy sent earlier or a fresh upload
+async function resolveUnigifMedia(payload: Partial<SendMessageParams>): Promise<Partial<SendMessageParams>> {
+  const { gif } = payload;
+  if (gif && isUnigifVideo(gif)) {
+    const prepared = await prepareUnigifGifForSending(gif);
+    return 'gif' in prepared
+      ? { ...payload, gif: prepared.gif }
+      : { ...payload, gif: undefined, attachment: undefined, attachments: [prepared.attachment] };
+  }
+
+  const attachments = payload.attachments || (payload.attachment ? [payload.attachment] : []);
+  const resolvedAttachments = await Promise.all(attachments.map(async (attachment) => {
+    if (!attachment.gif || !isUnigifVideo(attachment.gif)) return attachment;
+
+    const prepared = await prepareUnigifGifForSending(attachment.gif);
+    return 'gif' in prepared
+      ? { ...attachment, gif: prepared.gif }
+      : {
+        ...prepared.attachment,
+        uniqueId: attachment.uniqueId,
+        shouldSendAsSpoiler: attachment.shouldSendAsSpoiler,
+      };
+  }));
+
+  return { ...payload, attachment: undefined, attachments: resolvedAttachments };
 }
 
 function splitAttachmentsByType(attachments: ApiAttachment[]) {

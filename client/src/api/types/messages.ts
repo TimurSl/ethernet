@@ -139,6 +139,16 @@ export interface ApiVideo {
   timestamp?: number;
   altVideos?: ApiVideo[];
   storyboardInfo?: StoryboardInfo;
+  /** A GIF that lives on an external server rather than on Telegram */
+  externalSource?: ApiExternalGifSource;
+}
+
+export interface ApiExternalGifSource {
+  provider: 'unigif';
+  id: string;
+  mp4Url: string;
+  previewUrl: string;
+  posterUrl?: string;
 }
 
 export interface ApiAudio {

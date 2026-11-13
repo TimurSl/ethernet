@@ -83,6 +83,10 @@ const desktopBridge = {
   lastCrashedPluginGet: () => ipcRenderer.invoke('hermes:last-crashed-plugin-get'),
   clearLastCrashedPlugin: () => ipcRenderer.invoke('hermes:clear-last-crashed-plugin'),
   reportPluginCrash: (pluginId, error) => ipcRenderer.invoke('hermes:report-plugin-crash', pluginId, error),
+  // UNIGIF: свой сервер GIF (ключ хранится только в main)
+  unigifGetConfig: () => ipcRenderer.invoke('ethernet:unigif-get-config'),
+  unigifSetConfig: (patch) => ipcRenderer.invoke('ethernet:unigif-set-config', patch),
+  unigifTest: (candidate) => ipcRenderer.invoke('ethernet:unigif-test', candidate),
   // Счетчик непрочитанных для таскбара / трея
   setUnreadCount: (count) => ipcRenderer.send('hermes:set-unread-count', count),
   // Энергосбережение
