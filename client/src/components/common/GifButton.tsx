@@ -58,14 +58,18 @@ const GifButton = ({
 
   const isIntersecting = useIsIntersecting(ref, observeIntersection);
   const loadAndPlay = isIntersecting && !isDisabled;
-  const previewHash = !gif.hasVideoPreview && gif.thumbnail && getVideoMediaHash(gif, 'pictogram');
-  const previewBlobUrl = useMedia(previewHash, !loadAndPlay);
+  // External GIFs are served by URL from the app origin instead of being downloaded over MTProto
+  const { externalSource } = gif;
+  const previewHash = !externalSource && !gif.hasVideoPreview && gif.thumbnail && getVideoMediaHash(gif, 'pictogram');
+  const telegramPreviewBlobUrl = useMedia(previewHash, !loadAndPlay);
+  const previewBlobUrl = externalSource ? externalSource.posterUrl : telegramPreviewBlobUrl;
 
   const [withThumb] = useState(gif.thumbnail?.dataUri && !previewBlobUrl);
   const thumbRef = useCanvasBlur(gif.thumbnail?.dataUri, !withThumb);
 
-  const videoHash = getVideoPreviewMediaHash(gif) || getVideoMediaHash(gif, 'full');
-  const videoData = useMedia(videoHash, !loadAndPlay);
+  const videoHash = !externalSource && (getVideoPreviewMediaHash(gif) || getVideoMediaHash(gif, 'full'));
+  const telegramVideoData = useMedia(videoHash, !loadAndPlay);
+  const videoData = externalSource ? externalSource.previewUrl : telegramVideoData;
 
   const shouldRenderVideo = Boolean(loadAndPlay && videoData);
   const { isBuffered, bufferingHandlers } = useBuffering(true);

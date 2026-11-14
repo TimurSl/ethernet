@@ -5,6 +5,7 @@ import type { ApiVideo } from '../../../../api/types';
 
 import { throttle } from '../../../../util/schedulers';
 import { callApi } from '../../../../api/gramjs';
+import { fetchUnigifGifs } from '../../../../api/unigif';
 
 import useLastCallback from '../../../../hooks/useLastCallback';
 
@@ -16,7 +17,7 @@ type GifSearchResults = {
 
 const SEARCH_THROTTLE = 500;
 
-export default function useGifSearch({ query }: { query?: string }) {
+export default function useGifSearch({ query, isUnigif }: { query?: string; isUnigif?: boolean }) {
   const [results, setResults] = useState<GifSearchResults | undefined>();
 
   const searchIntentRef = useRef<string | undefined>();
@@ -25,9 +26,10 @@ export default function useGifSearch({ query }: { query?: string }) {
   runThrottledSearchRef.current ??= throttle((cb: NoneToVoidFunction) => cb(), SEARCH_THROTTLE, false);
 
   useEffect(() => {
+    setResults(undefined);
+
     if (!query) {
       searchIntentRef.current = undefined;
-      setResults(undefined);
       return;
     }
 
@@ -38,10 +40,7 @@ export default function useGifSearch({ query }: { query?: string }) {
         return;
       }
 
-      const result = await callApi('searchGifs', {
-        query,
-        username: getGlobal().config?.gifSearchUsername,
-      });
+      const result = await searchGifs(query, isUnigif);
 
       if (!result || searchIntentRef.current !== query) {
         return;
@@ -53,7 +52,7 @@ export default function useGifSearch({ query }: { query?: string }) {
         nextOffset: result.nextOffset,
       });
     });
-  }, [query]);
+  }, [query, isUnigif]);
 
   const searchMore = useLastCallback(() => {
     const currentResults = results;
@@ -68,11 +67,7 @@ export default function useGifSearch({ query }: { query?: string }) {
 
     void (async () => {
       try {
-        const result = await callApi('searchGifs', {
-          query: currentResults.key,
-          offset: currentResults.nextOffset,
-          username: getGlobal().config?.gifSearchUsername,
-        });
+        const result = await searchGifs(currentResults.key, isUnigif, currentResults.nextOffset);
         if (!result) {
           return;
         }
@@ -99,4 +94,26 @@ export default function useGifSearch({ query }: { query?: string }) {
   });
 
   return { results, searchMore };
+}
+
+async function searchGifs(
+  query: string, isUnigif?: boolean, offset?: string,
+): Promise<{ gifs: ApiVideo[]; nextOffset?: string } | undefined> {
+  if (!isUnigif) {
+    return callApi('searchGifs', {
+      query,
+      offset,
+      username: getGlobal().config?.gifSearchUsername,
+    });
+  }
+
+  // UNIGIF matches hashtags: `cat funny` needs both, `-dog` excludes one
+  try {
+    const result = await fetchUnigifGifs({ query, cursor: offset });
+    return result && { gifs: result.gifs, nextOffset: result.nextCursor };
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('[unigif] search failed', err);
+    return { gifs: [] };
+  }
 }

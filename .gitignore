@@ -42,3 +42,7 @@ wallpapers/*
 *.njsproj
 *.sln
 *.sw?
+
+# Nix build output
+result
+result-*

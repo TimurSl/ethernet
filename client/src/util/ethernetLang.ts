@@ -5,6 +5,50 @@ const DICTIONARY: Record<string, { ru: string; en: string }> = {
   EthernetFunctions: { ru: 'Функции', en: 'Functions' },
   EthernetFunctionsDesc: { ru: 'Режим призрака, твики и скрытность', en: 'Ghost mode, tweaks and privacy' },
   EthernetNetwork: { ru: 'Сеть', en: 'Network' },
+  EthernetUnigif: { ru: 'UNIGIF', en: 'UNIGIF' },
+  EthernetUnigifDesc: {
+    ru: 'Свой сервер GIF вместо сохранённых GIF Telegram',
+    en: 'Your own GIF server instead of Telegram saved GIFs',
+  },
+  EthernetUnigifHint: {
+    ru: 'Когда UNIGIF включён, панель GIF показывает вашу библиотеку UNIGIF, а «Добавить в GIF» '
+      + 'сохраняет туда, а не в Telegram. Нужен ключ с правами read и upload (пресет «picker»).',
+    en: 'While UNIGIF is on, the GIF panel shows your UNIGIF library and "Add to GIFs" saves there '
+      + 'instead of Telegram. The key needs the read and upload scopes (the "picker" preset).',
+  },
+  EthernetUnigifEnable: { ru: 'Использовать UNIGIF', en: 'Use UNIGIF' },
+  EthernetUnigifServerUrl: { ru: 'Адрес сервера', en: 'Server URL' },
+  EthernetUnigifApiKey: { ru: 'API-ключ', en: 'API key' },
+  EthernetUnigifApiKeySaved: {
+    ru: 'Ключ сохранён. Введите новый, чтобы заменить',
+    en: 'Key saved. Enter a new one to replace it',
+  },
+  EthernetUnigifSave: { ru: 'Сохранить', en: 'Save' },
+  EthernetUnigifTest: { ru: 'Проверить соединение', en: 'Test connection' },
+  EthernetUnigifTesting: { ru: 'Проверка…', en: 'Testing…' },
+  EthernetUnigifTestOk: { ru: 'Подключено', en: 'Connected' },
+  EthernetUnigifTestFailed: { ru: 'Ошибка', en: 'Failed' },
+  EthernetUnigifSaved: { ru: 'Настройки UNIGIF сохранены', en: 'UNIGIF settings saved' },
+  EthernetUnigifNeedsConfig: {
+    ru: 'Укажите адрес сервера и ключ, чтобы включить UNIGIF',
+    en: 'Set the server URL and key to turn UNIGIF on',
+  },
+  EthernetUnigifAdded: { ru: 'GIF добавлен в UNIGIF', en: 'GIF added to UNIGIF' },
+  EthernetUnigifAddedUnsorted: {
+    ru: 'Он в «Без хэштегов», пока вы его не отметите',
+    en: 'It stays in Unsorted until you tag it',
+  },
+  EthernetUnigifAlreadyAdded: { ru: 'Этот GIF уже есть в UNIGIF', en: 'This GIF is already in UNIGIF' },
+  EthernetUnigifProcessing: {
+    ru: 'UNIGIF обрабатывает GIF, он скоро появится',
+    en: 'UNIGIF is processing the GIF, it will appear shortly',
+  },
+  EthernetUnigifAddFailed: { ru: 'Не удалось добавить GIF в UNIGIF', en: 'Could not add the GIF to UNIGIF' },
+  EthernetUnigifSendFailed: { ru: 'Не удалось загрузить GIF из UNIGIF', en: 'Could not load the GIF from UNIGIF' },
+  EthernetUnigifEmpty: {
+    ru: 'В UNIGIF пока нет GIF. Нажмите «Добавить в GIF» на любом GIF в чате',
+    en: 'No GIFs in UNIGIF yet. Use "Add to GIFs" on any GIF in a chat',
+  },
   EthernetNetworkDesc: { ru: 'Прокси, соединение и ускорение', en: 'Proxy, connection and acceleration' },
   EthernetThemes: { ru: 'Темы', en: 'Themes' },
   EthernetThemesDesc: { ru: 'Пользовательские стили, редактор CSS', en: 'Custom styles, CSS editor' },

@@ -80,6 +80,8 @@ export interface ApiAttachment {
   uniqueId?: string;
   ttlSeconds?: number;
   isRoundVideo?: boolean;
+  /** Uploads a silent MP4 as an animation, so Telegram shows it as a GIF */
+  isGif?: true;
   shouldSendInHighQuality?: boolean;
 
   gif?: ApiVideo;

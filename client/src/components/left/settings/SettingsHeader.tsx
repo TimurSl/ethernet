@@ -112,6 +112,8 @@ const SettingsHeader: FC<OwnProps> = ({
         return <h3>{getEthernetString(lang, 'EthernetFunctions')}</h3>;
       case SettingsScreens.EthernetNetwork:
         return <h3>{getEthernetString(lang, 'EthernetNetwork')}</h3>;
+      case SettingsScreens.EthernetUnigif:
+        return <h3>{getEthernetString(lang, 'EthernetUnigif')}</h3>;
       case SettingsScreens.EthernetThemes:
         return <h3>{getEthernetString(lang, 'EthernetThemes')}</h3>;
       case SettingsScreens.EthernetPlugins:

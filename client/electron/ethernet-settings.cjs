@@ -6,8 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { app, safeStorage } = require('electron');
 
-const isPackaged = app ? app.isPackaged : false;
-const ROOT = process.env.PORTABLE_EXECUTABLE_DIR || (process.env.APPIMAGE ? path.dirname(process.env.APPIMAGE) : (isPackaged ? path.dirname(process.execPath) : path.join(__dirname, '..', '..')));
+const { ROOT } = require('./ethernet-paths.cjs');
 
 const ENC_PREFIX = 'enc:';
 
@@ -49,6 +48,9 @@ function prepareSettingsForDisk(settings) {
       }
     }
   }
+  if (clone.unigif && clone.unigif.apiKey) {
+    clone.unigif.apiKey = encryptSecret(clone.unigif.apiKey);
+  }
   return clone;
 }
 
@@ -59,6 +61,9 @@ function restoreSettingsFromDisk(settings) {
         p.auth.password = decryptSecret(p.auth.password);
       }
     }
+  }
+  if (settings && settings.unigif && settings.unigif.apiKey) {
+    settings.unigif.apiKey = decryptSecret(settings.unigif.apiKey);
   }
   return settings;
 }
@@ -377,6 +382,18 @@ module.exports = {
     s.pluginPermissions[id] = { ...(s.pluginPermissions[id] || {}), ...map };
     write(s);
     return s.pluginPermissions[id];
+  },
+
+  // UNIGIF: свой сервер GIF вместо сохранённых GIF Telegram. Ключ шифруется на диске
+  getUnigifSettings: () => {
+    const s = read();
+    return { enabled: false, baseUrl: '', apiKey: '', ...(s.unigif || {}) };
+  },
+  setUnigifSettings: (patch) => {
+    const s = read();
+    s.unigif = { enabled: false, baseUrl: '', apiKey: '', ...(s.unigif || {}), ...patch };
+    write(s);
+    return s.unigif;
   },
 
   // Настройки встроенного прокси (SOCKS5, HTTP)

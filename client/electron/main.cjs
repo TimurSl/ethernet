@@ -20,6 +20,7 @@ if (app) {
 }
 
 const { registerHermesFsHandlers } = require('./hermes-fs.cjs');
+const unigif = require('./unigif.cjs');
 const hermesSettings = require('./hermes-settings.cjs');
 
 // Полностью отключаем стандартное меню Electron (File, Edit, View, Window)
@@ -41,9 +42,8 @@ app.commandLine.appendSwitch('enable-zero-copy');
 app.commandLine.appendSwitch('enable-accelerated-video-decode');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 
-const isPackaged = app.isPackaged;
 const DIST = path.join(__dirname, '..', 'dist');
-const ROOT = process.env.PORTABLE_EXECUTABLE_DIR || (process.env.APPIMAGE ? path.dirname(process.env.APPIMAGE) : (isPackaged ? path.dirname(process.execPath) : path.join(__dirname, '..', '..')));
+const { ROOT } = require('./ethernet-paths.cjs');
 const THEMES_DIR = path.join(ROOT, 'themes');
 const PLUGINS_DIR = path.join(ROOT, 'plugins');
 const WALLPAPERS_DIR = path.join(ROOT, 'wallpapers');
@@ -211,6 +211,10 @@ function registerAppProtocol() {
       const pathname = decodeURIComponent(url.pathname);
 
       // --- Служебные ethernet / hermes-маршруты ---
+      if (unigif.isUnigifRoute(url.pathname)) {
+        return await unigif.handleUnigifRequest(request, url);
+      }
+
       if (pathname === '/ethernet/loader.js' || pathname === '/hermes/loader.js') {
         return new Response(fs.readFileSync(LOADER_PATH), {
           headers: { 'content-type': 'application/javascript; charset=utf-8' },
@@ -1037,6 +1041,7 @@ if (!gotTheLock) {
     });
 
     registerHermesFsHandlers();
+    unigif.registerUnigifHandlers();
     registerAppProtocol();
 
     try {

@@ -1253,7 +1253,7 @@ export async function rescheduleMessage({
 async function uploadMedia(message: ApiMessage, attachment: ApiAttachment, onProgress: ApiOnProgress) {
   const {
     filename, blobUrl, mimeType, quick, voice, audio, previewBlobUrl, shouldSendAsFile, shouldSendAsSpoiler, ttlSeconds,
-    isRoundVideo,
+    isRoundVideo, isGif,
   } = attachment;
 
   const patchedOnProgress: ApiOnProgress = (progress) => {
@@ -1296,9 +1296,15 @@ async function uploadMedia(message: ApiMessage, attachment: ApiAttachment, onPro
             h: height,
             supportsStreaming: true,
             roundMessage: isRoundVideo || undefined,
+            nosound: isGif,
           }));
         }
       }
+    }
+
+    // Telegram lists a silent MP4 as a GIF only when it carries the animated attribute
+    if (isGif && isVideo) {
+      attributes.push(new GramJs.DocumentAttributeAnimated());
     }
 
     if (audio) {

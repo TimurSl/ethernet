@@ -136,7 +136,35 @@ export interface HermesDesktopApi {
   lastCrashedPluginGet?: () => Promise<{ id: string; error: string; time: number } | null>;
   clearLastCrashedPlugin?: () => Promise<boolean>;
   reportPluginCrash?: (pluginId: string, error: string) => Promise<any>;
+  unigifGetConfig?: () => Promise<UnigifPublicConfig>;
+  unigifSetConfig?: (patch: UnigifConfigPatch) => Promise<UnigifPublicConfig>;
+  unigifTest?: (candidate?: { baseUrl?: string; apiKey?: string }) => Promise<UnigifTestResult>;
 }
+
+export type UnigifPublicConfig = {
+  /** Switched on and fully configured: the GIF panel and "Add to GIFs" use UNIGIF */
+  isEnabled: boolean;
+  isSwitchedOn: boolean;
+  baseUrl: string;
+  hasApiKey: boolean;
+  /** Session token the local proxy requires on API routes */
+  token: string;
+};
+
+export type UnigifConfigPatch = {
+  isEnabled?: boolean;
+  baseUrl?: string;
+  apiKey?: string;
+  shouldClearApiKey?: true;
+};
+
+export type UnigifTestResult = {
+  ok: boolean;
+  name?: string;
+  scopes?: string[];
+  status?: number;
+  error?: string;
+};
 
 export interface HermesPluginHookResult<T = any> {
   cancel?: boolean;

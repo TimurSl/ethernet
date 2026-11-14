@@ -23,6 +23,7 @@ import { onTickEnd } from '../../../util/schedulers';
 import { getServerTime } from '../../../util/serverTime';
 import { getEffectiveGhostSettings, isLocallyDeletedMessage, unmarkLocallyDeletedMessage } from '../../../util/ghostMode';
 import { callApi } from '../../../api/gramjs';
+import { rememberTelegramVideoForUnigif } from '../../../api/unigif';
 import {
   addPaidReaction,
   checkIfHasUnreadReactions,
@@ -275,6 +276,9 @@ addActionHandler('apiUpdate', (global, actions, update): ActionReturnType => {
       const chat = selectChat(global, chatId);
       const isLocal = isMessageLocal(message);
       const threadId = selectThreadIdFromMessage(global, message) || MAIN_THREAD_ID;
+      if (!isLocal && message.isOutgoing && message.content.video) {
+        rememberTelegramVideoForUnigif(message.content.video);
+      }
       const typingDraftEntries = getTypingDraftEntries(global, chatId, threadId);
       const hasTypingDraftsInThread = Boolean(typingDraftEntries.length);
       const shouldAttemptTypingDraftHandoff = !isLocal && !message.isOutgoing && !message.content.action;
@@ -595,6 +599,10 @@ addActionHandler('apiUpdate', (global, actions, update): ActionReturnType => {
       } = update;
 
       const currentMessage = selectChatMessage(global, chatId, id);
+
+      if (!isLocalMessageId(id) && message?.content?.video && (message.isOutgoing ?? currentMessage?.isOutgoing)) {
+        rememberTelegramVideoForUnigif(message.content.video);
+      }
 
       if (message?.reactions) {
         global = updateReactions(

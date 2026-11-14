@@ -9,6 +9,7 @@ import { SLIDE_TRANSITION_DURATION } from '../../../config';
 import { selectCurrentMessageList, selectIsChatWithSelf } from '../../../global/selectors';
 import { IS_TOUCH_ENV } from '../../../util/browser/windowEnvironment';
 import buildClassName from '../../../util/buildClassName';
+import { getEthernetString } from '../../../util/ethernetLang';
 import { getGridCornerClassName } from '../../../util/gridCorners';
 import resetScroll from '../../../util/resetScroll';
 
@@ -35,6 +36,7 @@ type OwnProps = {
 
 type StateProps = {
   savedGifs?: ApiVideo[];
+  isUnigif?: boolean;
   isSavedMessages?: boolean;
   emojiGroups?: ApiEmojiGroup[];
 };
@@ -47,12 +49,13 @@ const GifPicker = ({
   loadAndPlay,
   canSendGifs,
   savedGifs,
+  isUnigif,
   isSavedMessages,
   emojiGroups,
   onGifSelect,
   onGifAddCaption,
 }: OwnProps & StateProps) => {
-  const { loadSavedGifs, saveGif } = getActions();
+  const { loadSavedGifs, loadMoreUnigifGifs, saveGif } = getActions();
 
   const containerRef = useRef<HTMLDivElement>();
 
@@ -64,7 +67,7 @@ const GifPicker = ({
   const effectiveQuery = activeGroup ? activeGroup.emoticons.join('') : query.trim();
   const isSearchActive = Boolean(effectiveQuery);
 
-  const { results: searchResults, searchMore } = useGifSearch({ query: effectiveQuery || undefined });
+  const { results: searchResults, searchMore } = useGifSearch({ query: effectiveQuery || undefined, isUnigif });
 
   const displayRef = useRef<{ key: string; results: ApiVideo[] }>();
   if (isSearchActive && searchResults?.key === effectiveQuery) {
@@ -109,13 +112,19 @@ const GifPicker = ({
   });
 
   const handleScroll = useLastCallback((e: React.UIEvent<HTMLDivElement>) => {
-    if (!isSearchActive) {
+    if (!isSearchActive && !isUnigif) {
       return;
     }
 
     const container = e.currentTarget;
-    if (container.scrollHeight - container.scrollTop - container.clientHeight < LOAD_MORE_THRESHOLD) {
+    if (container.scrollHeight - container.scrollTop - container.clientHeight >= LOAD_MORE_THRESHOLD) {
+      return;
+    }
+
+    if (isSearchActive) {
       searchMore();
+    } else {
+      loadMoreUnigifGifs();
     }
   });
 
@@ -154,11 +163,16 @@ const GifPicker = ({
     }
 
     if (canRenderContents && savedGifs && savedGifs.length) {
-      return renderGifs(savedGifs, true);
+      // A UNIGIF key has no delete scope, so its GIFs cannot be removed from the panel
+      return renderGifs(savedGifs, !isUnigif);
     }
 
     if (canRenderContents && savedGifs) {
-      return <div className={styles.pickerDisabled}>{lang('GifPickerEmpty')}</div>;
+      return (
+        <div className={styles.pickerDisabled}>
+          {isUnigif ? getEthernetString(lang, 'EthernetUnigifEmpty') : lang('GifPickerEmpty')}
+        </div>
+      );
     }
 
     return undefined;
@@ -200,10 +214,13 @@ export default memo(withGlobal<OwnProps>(
     const { chatId } = selectCurrentMessageList(global) || {};
     const isSavedMessages = Boolean(chatId) && selectIsChatWithSelf(global, chatId);
 
+    const { unigif } = global.gifs;
+
     return {
-      savedGifs: global.gifs.saved.gifs,
+      savedGifs: unigif.isEnabled ? unigif.gifs : global.gifs.saved.gifs,
+      isUnigif: unigif.isEnabled,
       isSavedMessages,
-      emojiGroups: global.emojiGroups?.groups,
+      emojiGroups: unigif.isEnabled ? undefined : global.emojiGroups?.groups,
     };
   },
 )(GifPicker));

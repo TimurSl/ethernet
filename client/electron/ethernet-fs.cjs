@@ -1,7 +1,7 @@
 // Ethernet mod settings — файловые операции для тем и плагинов.
 // Всё через main-процесс: рендерер не имеет доступа к файловой системе.
 
-const { ipcMain, dialog, BrowserWindow, app } = require('electron');
+const { ipcMain, dialog, BrowserWindow } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const ethernetSettings = require('./ethernet-settings.cjs');
@@ -9,8 +9,7 @@ const proxyEngine = require('./proxy-engine.cjs');
 const proxyParser = require('./proxy-parser.cjs');
 const systemMediaService = require('./system-media-service.cjs');
 
-const isPackaged = app ? app.isPackaged : false;
-const ROOT = process.env.PORTABLE_EXECUTABLE_DIR || (process.env.APPIMAGE ? path.dirname(process.env.APPIMAGE) : (isPackaged ? path.dirname(process.execPath) : path.join(__dirname, '..', '..')));
+const { ROOT } = require('./ethernet-paths.cjs');
 const THEMES_DIR = path.join(ROOT, 'themes');
 const PLUGINS_DIR = path.join(ROOT, 'plugins');
 const WALLPAPERS_DIR = path.join(ROOT, 'wallpapers');

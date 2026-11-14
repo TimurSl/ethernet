@@ -41,6 +41,7 @@ const SettingsEthernet: FC<OwnProps> = ({ isActive, onReset }) => {
 
   const openFunctions = useLastCallback(() => openSettingsScreen({ screen: SettingsScreens.EthernetFunctions }));
   const openNetwork = useLastCallback(() => openSettingsScreen({ screen: SettingsScreens.EthernetNetwork }));
+  const openUnigif = useLastCallback(() => openSettingsScreen({ screen: SettingsScreens.EthernetUnigif }));
   const openThemes = useLastCallback(() => openSettingsScreen({ screen: SettingsScreens.EthernetThemes }));
   const openPlugins = useLastCallback(() => openSettingsScreen({ screen: SettingsScreens.EthernetPlugins }));
   const openExperimental = useLastCallback(() => openSettingsScreen({ screen: SettingsScreens.Experimental }));
@@ -66,6 +67,15 @@ const SettingsEthernet: FC<OwnProps> = ({ isActive, onReset }) => {
         >
           <span className="title">{getEthernetString(lang, 'EthernetNetwork')}</span>
           <span className="subtitle">{getEthernetString(lang, 'EthernetNetworkDesc')}</span>
+        </ListItem>
+        <ListItem
+          multiline
+          narrow
+          icon="gifs"
+          onClick={openUnigif}
+        >
+          <span className="title">{getEthernetString(lang, 'EthernetUnigif')}</span>
+          <span className="subtitle">{getEthernetString(lang, 'EthernetUnigifDesc')}</span>
         </ListItem>
         <ListItem
           multiline

@@ -82,6 +82,13 @@ npm run dist:win64
 ```
 The output executable will be created in `release/Ethernet-Windows-x64.exe`.
 
+### Nix / NixOS
+The repository is a flake. Telegram API credentials are required at build time:
+```bash
+nix build --impure --expr '(builtins.getFlake "github:TimurSl/ethernet").packages.x86_64-linux.default.override { telegramApiId = "…"; telegramApiHash = "…"; }'
+```
+See [docs/NIX.md](docs/NIX.md) for NixOS, the overlay and where data is stored.
+
 ### Linux (AppImage / tar.gz / deb)
 ```bash
 cd client

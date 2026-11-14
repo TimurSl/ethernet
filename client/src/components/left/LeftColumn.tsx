@@ -205,6 +205,7 @@ function LeftColumn({
         case SettingsScreens.EthernetPlugins:
         case SettingsScreens.EthernetFunctions:
         case SettingsScreens.EthernetNetwork:
+        case SettingsScreens.EthernetUnigif:
           openSettingsScreen({ screen: SettingsScreens.Ethernet });
           return;
         case SettingsScreens.Ethernet:

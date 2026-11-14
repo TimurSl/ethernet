@@ -120,6 +120,7 @@ import type {
   WebPageMediaSize,
 } from '../../types';
 import type { BrowserModalStateType, BrowserTab } from '../../types/browser';
+import type { UnigifPublicConfig } from '../../types/ethernet';
 import type { ClipboardTextFormat, MessageCopyRequest } from '../../types/messageCopy';
 import type { WebApp, WebAppOutboundEvent } from '../../types/webapp';
 import type { DownloadableMedia } from '../helpers';
@@ -169,6 +170,7 @@ export interface ActionPayloads {
     gif: ApiVideo;
     shouldUnsave?: boolean;
   } & WithTabId;
+  saveGifToUnigif: { gif: ApiVideo } & WithTabId;
   faveSticker: { sticker: ApiSticker } & WithTabId;
   unfaveSticker: { sticker: ApiSticker };
   toggleStickerSet: { stickerSetId: string };
@@ -2158,6 +2160,9 @@ export interface ActionPayloads {
 
   // GIFs
   loadSavedGifs: undefined;
+  loadUnigifGifs: { force?: true } | undefined;
+  loadMoreUnigifGifs: undefined;
+  applyUnigifConfig: { config: UnigifPublicConfig };
 
   // Stickers
   loadStickers: {

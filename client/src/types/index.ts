@@ -299,6 +299,7 @@ export enum SettingsScreens {
   EthernetThemeEditor,
   EthernetFunctions,
   EthernetNetwork,
+  EthernetUnigif,
 }
 
 export type StickerSetOrReactionsSetOrRecent = Pick<ApiStickerSet, (
